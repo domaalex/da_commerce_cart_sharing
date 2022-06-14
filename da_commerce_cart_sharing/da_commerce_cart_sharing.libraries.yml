@@ -1,0 +1,4 @@
+close_popup:
+  version: 1.0
+  js:
+    js/close_popup.js: {}

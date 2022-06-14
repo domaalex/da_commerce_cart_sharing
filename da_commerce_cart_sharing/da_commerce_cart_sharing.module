@@ -1,0 +1,68 @@
+<?php
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
+
+/**
+ * Implements hook_form_alter().
+ */
+function da_commerce_cart_sharing_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if (strpos($form_id, 'commerce_cart_form') !== FALSE) {
+      $cart_provider = \Drupal::service('commerce_cart.cart_provider');
+      $carts = $cart_provider->getCarts();
+      $order = array_shift($carts);
+
+      if (!empty($order)) {
+        $url = Url::fromRoute('da_commerce_cart_sharing.send_shareable_link', ['commerce_order' => $order->id()])->toString();
+        $form['share_cart_link'] = [
+          '#type' => 'item',
+          '#markup' => '<a href="' . $url . '" class="use-ajax btn btn-sm btn-success " data-dialog-type="modal">Share cart</a>',
+          '#weight' => 100,
+        ];
+      }
+
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function da_commerce_cart_sharing_theme($existing, $type, $theme, $path) {
+  return [
+    'shared_cart' => array(
+      'variables' => [
+        'title' => NULL,
+        'view' => NULL,
+        'url' => NULL,
+      ],
+    )
+  ];
+}
+
+/**
+ * Implements hook_views_data_alter().
+ */
+function da_commerce_cart_sharing_views_data_alter(array &$data) {
+  $data['views']['add_to_cart_link_field'] = [
+    'title' => t('View details add_to_cart_link_field'),
+    'field' => [
+      'title' => t('add_to_cart_link_field field'),
+      'help' => t('add_to_cart_link_field field'),
+      'id' => 'add_to_cart_link_field',
+    ],
+  ]; 
+}
+
+/**
+ * Implements hook_mail().
+ */
+function da_commerce_cart_mail($key, &$message, $params) {
+  switch ($key) {
+    case 'share_cart_email':
+      $message['from'] = \Drupal::config('system.site')->get('mail');
+      $message['subject'] = $params['subject'];
+      $message['body'][] = $params['body'];
+      $message['format'] = 'text/html';
+      break;
+  }
+}

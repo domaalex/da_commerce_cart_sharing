@@ -1,0 +1,33 @@
+da_commerce_cart_sharing.send_shareable_link:
+  path: '/send-link/{commerce_order}'
+  defaults:
+    _controller: '\Drupal\da_commerce_cart_sharing\Controller\CartController::sendShareableLink'
+  requirements:
+    _permission: 'access content'
+  options:
+    parameters:
+      commerce_order:
+        type: 'entity:commerce_order'
+
+da_commerce_cart_sharing.get_cart:
+  path: '/get-cart/{commerce_order}/{hash}'
+  defaults:
+    _controller: '\Drupal\da_commerce_cart_sharing\Controller\CartController::getCart'
+  requirements:
+    _custom_access: '\Drupal\da_commerce_cart_sharing\Controller\CartController::access'
+  options:
+    parameters:
+      commerce_order:
+        type: 'entity:commerce_order'
+    
+da_commerce_cart_sharing.add_to_cart_full:
+  path: '/add-to-cart-full/{commerce_order}/{hash}'
+  defaults:
+    _controller: '\Drupal\da_commerce_cart_sharing\Controller\CartController::addToCartFull'
+    token: ''
+  requirements:
+    _custom_access: '\Drupal\da_commerce_cart_sharing\Controller\CartController::access'
+  options:
+    parameters:
+      commerce_order:
+        type: 'entity:commerce_order'
